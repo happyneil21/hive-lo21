@@ -4,12 +4,14 @@
 #pragma once
 
 #include <iostream>
-#include <stdio.h>
 #include <string>
+#include <vector>
+
+using namespace std;
 
 class Piece {
 public:
-    Piece(const string& type) : type(type) {} ///on construit une pièce uniquement à partir de son type en supposant qu'elle n'est pas sur le plateaudès qu'elle est créée
+    Piece(const string& type) : type(type) {} // On construit une piÃ¨ce uniquement Ã  partir de son type en supposant qu'elle n'est pas sur le plateau dÃ¨s qu'elle est crÃ©Ã©e
     virtual ~Piece() {}
 
     int getX() const { return x; }
@@ -31,70 +33,125 @@ public:
         }
     }
 
-protected: ///pour donner accès à ces données dans les classes qui héritent de Piece
-    int x, y; ///coordonnées pour l'attribut position
-    string type; ///type de la pièce
-    bool placee = false; ///pour savoir si la pièce créée est en jeu ou non
-};
-
-
-class ReineAbeille : public Piece {
-    // parametrer les déplacements
-};
-
-
-
-class ReineAbeille : public Piece {
-public:
-    void deplacerReine(int x, int y) {
-        if ((x == ReineAbeille.x || x == ReineAbeille.x + 1 || x == ReineAbeille.x - 1) && // Je vérifie que le Movement demandé est possible selon les règles 
-            y == ReineAbeille.y || y == ReineAbeille.y + 1 || x == ReineAbeille.y - 1) &&
-            !estOcupe(x, y)){  // Il faut aussi rajouter une condition si il y a des cases occupées ou non
-                ReineAbeille.deplacerPiece(x, y); //La fonction deplacerPiecer vérifira si il y a une pièce adjacente
-            }
-    }
-    bool reineEntourer() {
-        return  estOcupe(ReineAbeille.x + 1, ReineAbeille.y) &&  //Vérifie si toute les cases autour de la reine sont occupé 
-                estOcupe(ReineAbeille.x - 1, ReineAbeille.y) &&
-                estOcupe(ReineAbeille.x, ReineAbeille.y + 1) &&
-                estOcupe(ReineAbeille.x, ReineAbeille.y - 1) &&
-                estOcupe(ReineAbeille.x + 1, ReineAbeille.y + 1) &&
-                estOcupe(ReineAbeille.x + 1, ReineAbeille.y - 1); //manque deux diags
-    }
+protected: // Pour donner accÃ¨s Ã  ces donnÃ©es dans les classes qui hÃ©ritent de Piece
+    int x, y; // CoordonnÃ©es pour l'attribut position
+    string type; // Type de la piÃ¨ce
+    bool placee = false; // Pour savoir si la piÃ¨ce crÃ©Ã©e est en jeu ou non
 };
 
 class Case {
+public:
+    Case(int x, int y) : m_x(x), m_y(y), m_estOcupe(false) {}
+
+    int getX() const { return m_x; }
+    int getY() const { return m_y; }
+    bool estOcupe() const { return m_estOcupe; }
+    void occuper() { m_estOcupe = true; }
+    void liberer() { m_estOcupe = false; }
+
+private:
     int m_x, m_y;
     bool m_estOcupe;
+};
+
+class ReineAbeille : public Piece {
 public:
-    bool getEtat() {
-        return m_estOcupe;
+    ReineAbeille() : Piece("Reine Abeille") {}
+    // def du dÃ©placement !! marche seulement pour un quadrillage
+    void deplacerReine(int x, int y, const vector<Case>& plateau) { // vecteur qui va prendre en mÃ©moire touts les objets cases du plateau
+        if ((x == this->x || x == this->x + 1 || x == this->x - 1) && // VÃ©rifie que le mouvement demandÃ© est possible selon les rÃ¨gles 
+            (y == this->y || y == this->y + 1 || y == this->y - 1) &&
+            !estOcupe(x, y, plateau)) {  // VÃ©rifie si la case est occupÃ©e
+            this->deplacerPiece(x, y); // La fonction deplacerPiece vÃ©rifiera s'il y a une piÃ¨ce adjacente
+        }
+    }
+
+    bool reineEntourer(const vector<Case>& plateau) const {
+        return  estOcupe(this->x + 1, this->y, plateau) && // VÃ©rifie si toutes les cases autour de la reine sont occupÃ©es 
+            estOcupe(this->x - 1, this->y, plateau) &&
+            estOcupe(this->x, this->y + 1, plateau) &&
+            estOcupe(this->x, this->y - 1, plateau) &&
+            estOcupe(this->x + 1, this->y + 1, plateau) &&
+            estOcupe(this->x + 1, this->y - 1, plateau);
+    }
+
+private:
+    bool estOcupe(int x, int y, const vector<Case>& plateau) const {
+        for (const auto& c : plateau) {
+            if (c.getX() == x && c.getY() == y) {
+                return c.estOcupe();
+            }
+        }
+        return false;
     }
 };
 
-
 class Araignee : public Piece {
-    // parametrer les déplacements
+public:
+    Araignee() : Piece("AraignÃ©e") {}
+    void deplacerAraignee(int x, int y, const vector<Case>& plateau) {
+
+    }
+private:
+    bool estAccessibleEn3cases(int x, int y, const vector<Case>& plateau) const {
+        // Logique pour vÃ©rifier si la case d'arrivÃ©e est accessible en exactement 3 cases 
+        // Cette logique dÃ©pendra des rÃ¨gles spÃ©cifiques de dÃ©placement pour l'araignÃ©e 
+        int dx = x - this->x;
+        int dy = y - this->y;
+        if (abs(dx) + abs(dy) != 3) { return false; }
+        vector<pair<int, int>> directions = { {1,0}, {-1,0}, {0,1},{1,1}, {0,-1}, {1,-1},{-1,1}, {-1, -1} };
+        for (const auto& dir1 : directions) {
+            int milX1 = this->x + dir1.first;
+            int milY1 = this->y + dir1.second;
+            if (estOcupe(milX1, milY1, plateau)) continue;
+            for (const auto& dir2 : directions) {
+                int milX2 = milX1 + dir2.first;
+                int milY2 = milY1 + dir2.second;
+                if (estOcupe(milX2, milY2, plateau)) continue;
+                for (const auto& dir3 : directions) {
+                    int finalX = milX2 + dir3.first;
+                    int finalY = milY2 + dir3.second;
+                    if (finalX == x && finalY == y) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    bool estOcupe(int x, int y, const vector<Case>& plateau) const {
+        for (const auto& c : plateau) {
+            if (c.getX() == x && c.getY() == y) {
+                return c.estOcupe();
+            }
+        }
+        return false;
+    }
 };
 
-
 class Scarabee : public Piece {
-    // parametrer les déplacements
+public:
+    Scarabee() : Piece("ScarabÃ©e") {}
+    // ParamÃ©trer les dÃ©placements
 };
 
 class Fourmis : public Piece {
-    // parametrer les déplacements
+public:
+    Fourmis() : Piece("Fourmi") {}
+    // ParamÃ©trer les dÃ©placements
 };
-
 
 class Sauterelle : public Piece {
-    // parametrer les déplacements
+public:
+    Sauterelle() : Piece("Sauterelle") {}
+    // ParamÃ©trer les dÃ©placements
 };
 
-
 class Moustique : public Piece {
-    // parametrer les déplacements
+public:
+    Moustique() : Piece("Moustique") {}
+    // ParamÃ©trer les dÃ©placements
 };
 
 #endif
-

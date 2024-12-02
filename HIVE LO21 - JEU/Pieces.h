@@ -11,7 +11,7 @@ using namespace std;
 
 class Piece {
 public:
-    Piece(const string& type) : type(type) {} // On construit une pièce uniquement à partir de son type en supposant qu'elle n'est pas sur le plateau dès qu'elle est créée
+    Piece(const string& type) : type(type), x(0), y(0) {} // On construit une pièce uniquement à partir de son type en supposant qu'elle n'est pas sur le plateau dès qu'elle est créée
     virtual ~Piece() {}
 
     int getX() const { return x; }
@@ -49,6 +49,22 @@ public:
     void occuper() { m_estOcupe = true; }
     void liberer() { m_estOcupe = false; }
 
+    bool estAdjacente(const vector<Case>& plateau) const {
+        static const vector<pair<int, int>> directions = {
+            {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
+        };
+        for (const auto& direction : directions) {
+            int adjX = m_x + direction.first;
+            int adjY = m_y + direction.second;
+            for (const auto& c : plateau) {
+                if (c.getX() == adjX && c.getY() == adjY && c.estOcupe()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 private:
     int m_x, m_y;
     bool m_estOcupe;
@@ -61,7 +77,7 @@ public:
     void deplacerReine(int x, int y, const vector<Case>& plateau) { // vecteur qui va prendre en mémoire touts les objets cases du plateau
         if ((x == this->x || x == this->x + 1 || x == this->x - 1) && // Vérifie que le mouvement demandé est possible selon les règles 
             (y == this->y || y == this->y + 1 || y == this->y - 1) &&
-            !estOcupe(x, y, plateau)) {  // Vérifie si la case est occupée
+            !estOcupe(x, y, plateau) && Case(x, y).estAdjacente(plateau)) {  // Vérifie si la case est occupée
             this->deplacerPiece(x, y); // La fonction deplacerPiece vérifiera s'il y a une pièce adjacente
         }
     }
@@ -103,11 +119,11 @@ private:
         for (const auto& dir1 : directions) {
             int milX1 = this->x + dir1.first;
             int milY1 = this->y + dir1.second;
-            if (estOcupe(milX1, milY1, plateau)) continue;
+            if (estOcupe(milX1, milY1, plateau) && Case(milX1, milY1).estAdjacente(plateau)) continue;
             for (const auto& dir2 : directions) {
                 int milX2 = milX1 + dir2.first;
                 int milY2 = milY1 + dir2.second;
-                if (estOcupe(milX2, milY2, plateau)) continue;
+                if (estOcupe(milX2, milY2, plateau) && Case(milX2, milY2).estAdjacente(plateau)) continue;
                 for (const auto& dir3 : directions) {
                     int finalX = milX2 + dir3.first;
                     int finalY = milY2 + dir3.second;

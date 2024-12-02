@@ -3,8 +3,8 @@
 #include <algorithm>
 using namespace std;
 
-Jeu::Jeu() {  // on va ajouter à la liste des pieces disponible en stock les pieces qu'on veut utiliser pendant la partie
-                // là c'est la compo basqiue je crois à veriier
+Jeu::Jeu() {  // on va ajouter Ã  la liste des pieces disponible en stock les pieces qu'on veut utiliser pendant la partie
+    // lÃ  c'est la compo basqiue je crois Ã  veriier
     pieces_disponible.push_back(new ReineAbeille);
     pieces_disponible.push_back(new Scarabee);
     pieces_disponible.push_back(new Scarabee);
@@ -20,19 +20,21 @@ Jeu::Jeu() {  // on va ajouter à la liste des pieces disponible en stock les pie
     pieces_disponible.push_back(new Moustique);
 }
 
-void Jeu::ajouterPiece(Piece* piece, int x, int y) {
-    piece->setPosition(x, y);
-    pieces_disponible.push_back(piece);
-    auto dispo = find(pieces_disponible.begin(), pieces_disponible.end(), piece); 
-    if (dispo != pieces_disponible.end()) { 
-        pieces_disponible.erase(dispo); 
+void Jeu::ajouterPiece(Piece* piece, int x, int y) {  // ajouter une piece au Jeu = ajouter une piece au plateau principale en gros (pieces_placees.push_back(piece);)
+    auto it = find(pieces_disponible.begin(), pieces_disponible.end(), piece);
+    if (it != pieces_disponible.end()) {
+        piece->placerPiece(x, y);
+        pieces_placees.push_back(piece);
+        pieces_disponible.erase(it);
     }
-    
+    else {
+        std::cout << "La piÃ¨ce de type " << piece->getType() << " n'est pas disponible." << "endl";
+    }
 }
 
 void Jeu::deplacerPiece(int index, int newX, int newY) {
     if (index >= 0 && index < pieces_placees.size()) {
-        pieces_placees[index]->setPosition(newX, newY);
+        pieces_placees[index]->placerPiece(newX, newY);
     }
 }
 
@@ -41,6 +43,6 @@ bool Jeu::GameOver() const {
 }
 
 bool Jeu::verifConditionVictoire() const {
-    // Implémenter la logique pour vérifier si la Reine Abeille est entourée
+    // ImplÃ©menter la logique pour vÃ©rifier si la Reine Abeille est entourÃ©e
     return false; // Placeholder
 }

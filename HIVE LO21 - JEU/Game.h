@@ -14,5 +14,6 @@ public:
 private:
     vector<Piece*> pieces_placees;
     vector <Piece*> pieces_disponible;
+    vector <Case*> plateau;
     bool verifConditionVictoire() const;
 };

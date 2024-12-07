@@ -1,6 +1,3 @@
-#ifndef PIECES_H
-#define PIECES_H
-
 #pragma once
 
 #include <iostream>
@@ -30,19 +27,18 @@ protected: // Pour donner accès à ces données dans les classes qui héritent 
 
 class Case {
 public:
-    Case(int x, int y) : m_x(x), m_y(y), m_estOcupe(false) {}
+    Case(int x, int y) : m_x(x), m_y(y), m_piece(nullptr) {}
 
     int getX() const { return m_x; }
     int getY() const { return m_y; }
-    bool estOcupe() const { return m_estOcupe; }
-    void occuper() { m_estOcupe = true; }
-    void liberer() { m_estOcupe = false; }
-
+    bool estOccupe() const { return m_piece != nullptr; }
+    Piece* getPiece() const { return m_piece; }
+    void setPiece(Piece* piece) { m_piece = piece; }
     bool estAdjacente(const vector<Case>& plateau) const;
 
 private:
     int m_x, m_y;
-    bool m_estOcupe;
+    Piece* m_piece;
 };
 
 class ReineAbeille : public Piece {
@@ -86,5 +82,3 @@ public:
     Moustique() : Piece("Moustique") {}
     // Paramétrer les déplacements
 };
-
-#endif

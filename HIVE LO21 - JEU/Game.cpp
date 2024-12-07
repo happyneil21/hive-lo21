@@ -19,6 +19,13 @@ Jeu::Jeu() {
     pieces_disponible.push_back(new Sauterelle);
     pieces_disponible.push_back(new Moustique);
     pieces_disponible.push_back(new Moustique);
+
+    // Initialize the game board (plateau) with Cases
+    for (int x = 0; x < 10; ++x) { // Example dimensions
+        for (int y = 0; y < 10; ++y) {
+            plateau.push_back(Case(x, y));
+        }
+    }
 }
 
 // Singleton instance
@@ -27,19 +34,37 @@ Jeu* Jeu::instance = nullptr;
 void Jeu::ajouterPiece(Piece* piece, int x, int y) {
     auto it = find(pieces_disponible.begin(), pieces_disponible.end(), piece);
     if (it != pieces_disponible.end()) {
-        piece->placerPiece(x, y);
-        pieces_placees.push_back(piece);
-        pieces_disponible.erase(it);
+        for (Case& c : plateau) {
+            if (c.getX() == x && c.getY() == y && !c.estOccupe()) {
+                c.setPiece(piece);
+                piece->placerPiece(x, y);
+                pieces_disponible.erase(it);
+                return;
+            }
+        }
+        std::cout << "La case (" << x << ", " << y << ") est déjà occupée." << std::endl;
     }
     else {
-        std::cout << "La pièce de type " << piece->getType() << " n'est pas disponible." << "endl";
+        std::cout << "La pièce de type " << piece->getType() << " n'est pas disponible." << std::endl;
     }
 }
 
-void Jeu::deplacerPiece(int index, int newX, int newY) {
-    if (index >= 0 && index < pieces_placees.size()) {
-        pieces_placees[index]->placerPiece(newX, newY);
+void Jeu::deplacerPiece(Piece* piece, int newX, int newY) {
+    for (Case& c : plateau) {
+        if (c.getPiece() == piece) {
+            c.setPiece(nullptr); // Libérer l'ancienne case en mettant le pointeur de pièce à nullptr
+            break;
+        }
     }
+
+    for (Case& c : plateau) {
+        if (c.getX() == newX && c.getY() == newY && !c.estOccupe()) {
+            c.setPiece(piece);
+            piece->deplacerPiece(newX, newY);
+            return;
+        }
+    }
+    std::cout << "La case (" << newX << ", " << newY << ") est déjà occupée." << std::endl;
 }
 
 bool Jeu::GameOver() const {
@@ -58,7 +83,7 @@ bool Jeu::TouteslesCasessontConnectées(const vector<Case>& plateau) const {
 
     // Trouver une première case occupée pour commencer
     size_t start = 0;
-    while (start < plateau.size() && !plateau[start].estOcupe()) {
+    while (start < plateau.size() && !plateau[start].estOccupe()) {
         ++start;
     }
 
@@ -80,7 +105,7 @@ bool Jeu::TouteslesCasessontConnectées(const vector<Case>& plateau) const {
             int adjY = caseCourante->getY() + direction.second;
 
             for (size_t i = 0; i < plateau.size(); ++i) {
-                if (!visités[i] && plateau[i].getX() == adjX && plateau[i].getY() == adjY && plateau[i].estOcupe()) {
+                if (!visités[i] && plateau[i].getX() == adjX && plateau[i].getY() == adjY && plateau[i].estOccupe()) {
                     visités[i] = true;
                     file.push(&plateau[i]);
                     ++countVisited;
@@ -91,7 +116,7 @@ bool Jeu::TouteslesCasessontConnectées(const vector<Case>& plateau) const {
 
     // Vérifier si toutes les cases occupées ont été visitées
     for (size_t i = 0; i < plateau.size(); ++i) {
-        if (plateau[i].estOcupe() && !visités[i]) {
+        if (plateau[i].estOccupe() && !visités[i]) {
             return false;
         }
     }

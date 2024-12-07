@@ -1,10 +1,11 @@
 #include "Game.h"
 #include "Pieces.h"
 #include <algorithm>
+#include <queue>
 using namespace std;
 
-Jeu::Jeu() {  // on va ajouter à la liste des pieces disponible en stock les pieces qu'on veut utiliser pendant la partie
-    // là c'est la compo basqiue je crois à veriier
+Jeu::Jeu() {
+    // Initialize your pieces here
     pieces_disponible.push_back(new ReineAbeille);
     pieces_disponible.push_back(new Scarabee);
     pieces_disponible.push_back(new Scarabee);
@@ -20,7 +21,10 @@ Jeu::Jeu() {  // on va ajouter à la liste des pieces disponible en stock les pi
     pieces_disponible.push_back(new Moustique);
 }
 
-void Jeu::ajouterPiece(Piece* piece, int x, int y) {  // ajouter une piece au Jeu = ajouter une piece au plateau principale en gros (pieces_placees.push_back(piece);)
+// Singleton instance
+Jeu* Jeu::instance = nullptr;
+
+void Jeu::ajouterPiece(Piece* piece, int x, int y) {
     auto it = find(pieces_disponible.begin(), pieces_disponible.end(), piece);
     if (it != pieces_disponible.end()) {
         piece->placerPiece(x, y);
@@ -43,6 +47,54 @@ bool Jeu::GameOver() const {
 }
 
 bool Jeu::verifConditionVictoire() const {
-    // Implémenter la logique pour vérifier si la Reine Abeille est entourée
-    return false; // Placeholder
+    // Implement the logic to check if the Reine Abeille is surrounded
+    return false;
+}
+
+static const vector<pair<int, int>> directions = { {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1} };
+
+bool Jeu::TouteslesCasessontConnectées(const vector<Case>& plateau) const {
+    if (plateau.empty()) return true;
+
+    // Trouver une première case occupée pour commencer
+    size_t start = 0;
+    while (start < plateau.size() && !plateau[start].estOcupe()) {
+        ++start;
+    }
+
+    // Si toutes les cases sont vides
+    if (start == plateau.size()) return true;
+
+    queue<const Case*> file;
+    vector<bool> visités(plateau.size(), false);
+    file.push(&plateau[start]);
+    visités[start] = true;
+    size_t countVisited = 1; // Compte les cases visitées
+
+    while (!file.empty()) {
+        const Case* caseCourante = file.front();
+        file.pop();
+
+        for (const auto& direction : directions) {
+            int adjX = caseCourante->getX() + direction.first;
+            int adjY = caseCourante->getY() + direction.second;
+
+            for (size_t i = 0; i < plateau.size(); ++i) {
+                if (!visités[i] && plateau[i].getX() == adjX && plateau[i].getY() == adjY && plateau[i].estOcupe()) {
+                    visités[i] = true;
+                    file.push(&plateau[i]);
+                    ++countVisited;
+                }
+            }
+        }
+    }
+
+    // Vérifier si toutes les cases occupées ont été visitées
+    for (size_t i = 0; i < plateau.size(); ++i) {
+        if (plateau[i].estOcupe() && !visités[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }

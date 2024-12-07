@@ -100,4 +100,3 @@ void Piece::deplacerPiece(int x, int y) {
         this->y = y;
     }
 }
-}

@@ -4,14 +4,14 @@
 using namespace std;
 
 int main() {
-    Jeu jeu;
+    Jeu* jeu = Jeu::getInstance();
 
     do {
         cout << "debut du jeu";
-        /* [rappel règle du jeu] :
-        A chaque tour du joueur y a 2 CHOIX: déplacer ou placer une nouvelle pièce */
+        /* [rappel rÃ¨gle du jeu] :
+        A chaque tour du joueur y a 2 CHOIX: dÃ©placer ou placer une nouvelle piÃ¨ce */
 
-    } while (!jeu.GameOver());
+    } while (!jeu->GameOver());
 
     return 0;
 }

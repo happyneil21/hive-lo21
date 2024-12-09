@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/ressources">
+        <file>abeille.png</file>
+        <file>araignee.png</file>
+        <file>fourmi.png</file>
+        <file>sauterelle.png</file>
+        <file>scarabee.png</file>
+    </qresource>
+</RCC>

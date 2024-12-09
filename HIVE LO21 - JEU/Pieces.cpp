@@ -6,10 +6,11 @@ bool Case::estAdjacente(const vector<Case>& plateau) const {
             {0, -1, 1}, {1, -1, 0}, {1, 0, -1}, {0, 1, -1}, {-1, 1, 0}, {-1, 0, +1} //Les 6 directions possibles pour une case/pièce {q, r, s}
     };
     for (const auto& direction : directions) {
-        int adjX = m_x + direction.first;
-        int adjY = m_y + direction.second;
-        for (const auto& c : plateau) {
-            if (c.getX() == adjX && c.getY() == adjY && c.estOccupe() == true) {
+        int adjQ = m_q + direction.first;
+        int adjR = m_r + direction.second;
+        int adjS = m_s + direction.third;
+        for (const auto& c : plateau) { 
+            if (c.getQ() == adjQ && c.getR() == adjR && c.getS() == adjS && c.estOccupe() == true) {
                 return true;
             }
         }
@@ -17,34 +18,35 @@ bool Case::estAdjacente(const vector<Case>& plateau) const {
     return false;
 }
 
-void ReineAbeille::deplacerReine(int x, int y, const vector<Case>& plateau) {
-    if ((x == this->x || x == this->x + 1 || x == this->x - 1) && // Vérifie que le mouvement demandé est possible selon les règles 
-        (y == this->y || y == this->y + 1 || y == this->y - 1) &&
-        !estOcupe(x, y, plateau) && Case(x, y).estAdjacente(plateau)) {  // Vérifie si la case est occupée
-        this->deplacerPiece(x, y); // La fonction deplacerPiece vérifiera s'il y a une pièce adjacente
+void ReineAbeille::deplacerReine(int q, int r, int s, const vector<Case>& plateau) {
+    if ((q == this->q || q == this->q + 1 || q == this->q - 1) && // Vérifie que le mouvement demandé est possible selon les règles 
+        (r == this->r || r == this->r + 1 || r == this->r - 1) &&
+        (s == this->s || s == this->s + 1 || s == this->s - 1) &&
+        !estOcupe(q, r, s, plateau) && Case(q, r, s).estAdjacente(plateau)) {  // Vérifie si la case est occupée
+        this->deplacerPiece(q, r, s); // La fonction deplacerPiece vérifiera s'il y a une pièce adjacente
     }
 }
 
 bool ReineAbeille::reineEntourer(const vector<Case>& plateau) const {
-        return  estOcupe(this->x + 1, this->y, plateau) && // Vérifie si toutes les cases autour de la reine sont occupées 
-            estOcupe(this->x - 1, this->y, plateau) &&
-            estOcupe(this->x, this->y + 1, plateau) &&
-            estOcupe(this->x, this->y - 1, plateau) &&
-            estOcupe(this->x + 1, this->y + 1, plateau) &&
-            estOcupe(this->x + 1, this->y - 1, plateau);
-    return false;
+        return  estOcupe(this->q, this->r-1, this->s+1, plateau) && // Vérifie si toutes les cases autour de la reine sont occupées 
+            estOcupe(this->q+1, this->r-1, this->s, plateau) &&
+            estOcupe(this->q+1, this->r, this->s-1, plateau) &&
+            estOcupe(this->q, this->r+1, this->s-1, plateau) &&
+            estOcupe(this->q-1, this->r+1, this->s, plateau) &&
+            estOcupe(this->q-1, this->r, this->s+1, plateau);
+    //return false; return de trop
 }
 
-bool ReineAbeille::estOcupe(int x, int y, const vector<Case>& plateau) const {
+bool ReineAbeille::estOcupe(int q, int r, int s, const vector<Case>& plateau) const {
     for (const auto& c : plateau) {
-        if (c.getX() == x && c.getY() == y) {
+        if (c.getQ() == q && c.getR() == r && c.getS() == s) {
             return c.estOccupe();
         }
     }
     return false;
 }
 
-void Araignee::deplacerAraignee(int x, int y, const vector<Case>& plateau) {
+void Araignee::deplacerAraignee(int q, int r,, int s, const vector<Case>& plateau) {
     // Implémentez la logique de déplacement ici
 }
 
@@ -77,9 +79,9 @@ bool Araignee::estAccessibleEn3cases(int x, int y, const vector<Case>& plateau) 
     return false;
 }
 
-bool Araignee::estOcupe(int x, int y, const vector<Case>& plateau) const {
+bool Araignee::estOcupe(int q, int r, int s, const vector<Case>& plateau) const {
     for (const auto& c : plateau) {
-        if (c.getX() == x && c.getY() == y) {
+        if (c.getQ() == q && c.getR() == r && c.getS() == s) {
             return c.estOccupe();
         }
     }

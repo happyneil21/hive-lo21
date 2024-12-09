@@ -2,8 +2,8 @@
 
 
 bool Case::estAdjacente(const vector<Case>& plateau) const {
-    static const vector<pair<int, int>> directions = {
-            {1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
+    static const vector<pair<int, int, int>> directions = {
+            {0, -1, 1}, {1, -1, 0}, {1, 0, -1}, {0, 1, -1}, {-1, 1, 0}, {-1, 0, +1} //Les 6 directions possibles pour une case/pièce {q, r, s}
     };
     for (const auto& direction : directions) {
         int adjX = m_x + direction.first;

@@ -86,17 +86,19 @@ bool Araignee::estOcupe(int x, int y, const vector<Case>& plateau) const {
     return false;
 }
 
-void Piece::placerPiece(int x, int y) {
+void Piece::placerPiece(int q, int r, int s) {
     if (!placee) {
-        this->x = x;
-        this->y = y;
+        this->q = q;
+        this->r = r;
+        this->s = s;
         placee = true;
     }
 }
 
 void Piece::deplacerPiece(int x, int y) {
     if (placee) {
-        this->x = x;
-        this->y = y;
+        this->q = q;
+        this->r = r;
+        this->s = s;
     }
 }

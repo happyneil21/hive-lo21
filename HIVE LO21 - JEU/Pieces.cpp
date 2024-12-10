@@ -47,30 +47,47 @@ bool ReineAbeille::estOcupe(int q, int r, int s, const vector<Case>& plateau) co
 }
 
 void Araignee::deplacerAraignee(int q, int r,, int s, const vector<Case>& plateau) {
-    // Implémentez la logique de déplacement ici
+    if(estAccessibleEn3cases(q,r,s,plateau)){
+        this->deplacerPiece(q,r,s,plateau);
+    }
 }
 
-bool Araignee::estAccessibleEn3cases(int x, int y, const vector<Case>& plateau) const {
-    // Logique pour vérifier si la case d'arrivée est accessible en exactement 3 cases 
-    // Cette logique dépendra des règles spécifiques de déplacement pour l'araignée 
-    int dx = x - this->x;
-    int dy = y - this->y;
-    if (abs(dx) + abs(dy) != 3) {
+bool Araignee::estAccessibleEn3cases(int q, int r, int s, const vector<Case>& plateau) const {
+    // Logique pour vérifier si la case d'arrivée est accessible en exactement 3 mouvements
+    // Les directions possibles dans un plateau hexagonal (axial coordinates)
+    static const vector<pair<int, int, int>> directions = {
+            {0, -1, 1}, {1, -1, 0}, {1, 0, -1}, {0, 1, -1}, {-1, 1, 0}, {-1, 0, +1} //Les 6 directions possibles pour une case/pièce {q, r, s}
+    };
+
+    auto estOccupe = [](int q, int r, const vector<Case>& plateau) -> bool {
+        for (const auto& c : plateau) {
+            if (c.getQ() == q && c.getR() == r) {
+                return c.estOcupe();
+            }
+        }
         return false;
-    }
-    vector<pair<int, int>> directions = { {1, 0}, {-1, 0}, {0, 1}, {1, 1}, {0, -1}, {1, -1}, {-1, 1}, {-1, -1} };
+    };
+
     for (const auto& dir1 : directions) {
-        int milX1 = this->x + dir1.first;
-        int milY1 = this->y + dir1.second;
-        if (estOcupe(milX1, milY1, plateau) && Case(milX1, milY1).estAdjacente(plateau) && Jeu::getInstance()->TouteslesCasessontConnectées(plateau)) continue;
+        int q1 = this->q + dir1.first;
+        int r1 = this->r + dir1.second;
+        int s1 = this->s + dir1.third;
+
+        if (!estOccupe(q1, r1, plateau)) continue;
+
         for (const auto& dir2 : directions) {
-            int milX2 = milX1 + dir2.first;
-            int milY2 = milY1 + dir2.second;
-            if (estOcupe(milX2, milY2, plateau) && Case(milX2, milY2).estAdjacente(plateau) && Jeu::getInstance()->TouteslesCasessontConnectées(plateau)) continue;
+            int q2 = q1 + dir2.first;
+            int r2 = r1 + dir2.second;
+            int s2 = s1 + dir2.third;
+
+            if (!estOccupe(q2, r2, plateau)) continue;
+
             for (const auto& dir3 : directions) {
-                int finalX = milX2 + dir3.first;
-                int finalY = milY2 + dir3.second;
-                if (finalX == x && finalY == y && Jeu::getInstance()->TouteslesCasessontConnectées(plateau)) {
+                int finalQ = q2 + dir3.first;
+                int finalR = r2 + dir3.second;
+                int finalS = s2 + dir3.third
+
+                if (finalQ == q && finalR == r && finalS == s) {
                     return true;
                 }
             }
@@ -78,7 +95,6 @@ bool Araignee::estAccessibleEn3cases(int x, int y, const vector<Case>& plateau) 
     }
     return false;
 }
-
 bool Araignee::estOcupe(int q, int r, int s, const vector<Case>& plateau) const {
     for (const auto& c : plateau) {
         if (c.getQ() == q && c.getR() == r && c.getS() == s) {

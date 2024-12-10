@@ -104,6 +104,23 @@ bool Araignee::estOcupe(int q, int r, int s, const vector<Case>& plateau) const 
     return false;
 }
 
+void Scarabee::deplacerScarabee(int q, int r, int s, const vector<Case>& plateau){
+        if ((q == this->q || q == this->q + 1 || q == this->q - 1) && // Vérifie que le mouvement demandé est possible selon les règles 
+        (r == this->r || r == this->r + 1 || r == this->r - 1) &&
+        (s == this->s || s == this->s + 1 || s == this->s - 1) &&
+        Case(q, r, s).estAdjacente(plateau)) {  //On vérifie juste la case est adjacentes
+        this->deplacerPiece(q, r, s); // La fonction deplacerPiece vérifiera s'il y a une pièce adjacente
+    }
+}
+
+bool Scarabee::estOcupe(int q,int r, int s, const vector<Case>& plateau){
+            if (c.getQ() == q && c.getR() == r && c.getS() == s) {
+            return c.estOccupe();
+        }
+    }
+    return false;
+}
+
 void Piece::placerPiece(int q, int r, int s) {
     if (!placee) {
         this->q = q;

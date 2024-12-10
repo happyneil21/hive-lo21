@@ -64,6 +64,9 @@ private:
 class Scarabee : public Piece {
 public:
     Scarabee() : Piece("Scarabée") {}
+    void deplacerScarabee(int q, int r, int s, const vector<Case>& plateau);
+private:
+    bool estOcupe(int q,int r, int s, const vector<Case>& plateau);
     // Paramétrer les déplacements
 };
 

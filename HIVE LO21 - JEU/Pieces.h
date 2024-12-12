@@ -79,6 +79,9 @@ public:
 class Sauterelle : public Piece {
 public:
     Sauterelle() : Piece("Sauterelle") {}
+    void deplacerSauterelle(int q, int r, int s, const vector<Case>& plateau);
+private:
+    bool estOcupe(int q,int r, int s, const vector<Case>& plateau);
     // Paramétrer les déplacements
 };
 

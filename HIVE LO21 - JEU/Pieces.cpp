@@ -121,6 +121,81 @@ bool Scarabee::estOcupe(int q,int r, int s, const vector<Case>& plateau){
     return false;
 }
 
+void Sauterelle::deplacerSauterelle(int q, int r, int q, const vector<Case>& plateau){
+    if(q==this->q){
+        if(r<this->r){
+            int compteur(-1);
+            for(int i = r+1; i=this->r; i++){
+                if(!estOcupe(q,i,s+compteur,plateau)){
+                    return;
+                }
+                compteur--;
+            }
+            this->deplacerPiece(q,r,s);
+        }
+        else{
+            int compteur(1);
+            for(int i = r-1; i=this->r; i--){
+                if(!estOcupe(q,i,s+compteur,plateau)){
+                    return;
+                }
+                compteur++;
+            }
+            this->deplacerPiece(q,r,s);
+        }
+    }else if(r==this->r){
+        if(q<this->q){
+            int compteur(-1);
+            for(int i = q+1; i=this->q; i++){
+                if(!estOcupe(i,r,s+compteur,plateau)){
+                    return;
+                }
+                compteur--;
+            }
+            this->deplacerPiece(q,r,s);
+        }
+        else{
+            int compteur(1);
+            for(int i = q-1; i=this->q; i--){
+                if(!estOcupe(i,r,s+compteur,plateau)){
+                    return;
+                }
+                compteur++;
+            }
+            this->deplacerPiece(q,r,s);
+        }
+    }else if(s==this->s){
+        if(q<this->q){
+            int compteur(-1);
+            for(int i = q+1; i=this->q; i++){
+                if(!estOcupe(i,r+compteur,s,plateau)){
+                    return;
+                }
+                compteur--;
+            }
+            this->deplacerPiece(q,r,s);
+        }
+        else{
+            int compteur(1);
+            for(int i = q-1; i=this->q; i--){
+                if(!estOcupe(i,r+compteur,s,plateau)){
+                    return;
+                }
+                compteur++;
+            }
+            this->deplacerPiece(q,r,s);
+        }
+    }
+}
+
+bool Sauterelle::estOcupe(int q, int r, int s, const vector<Case>& plateau){
+        if (c.getQ() == q && c.getR() == r && c.getS() == s) {
+            return c.estOccupe();
+        }
+    }
+    return false;
+}
+
 void Piece::placerPiece(int q, int r, int s) {
     if (!placee) {
         this->q = q;

@@ -122,10 +122,10 @@ bool Scarabee::estOcupe(int q,int r, int s, const vector<Case>& plateau){
 }
 
 void Sauterelle::deplacerSauterelle(int q, int r, int q, const vector<Case>& plateau){
-    if(q==this->q){
-        if(r<this->r){
+    if(q==this->q){ //On vérifie la direction de la Sauterelle
+        if(r<this->r){ //On vérifie son sens 
             int compteur(-1);
-            for(int i = r+1; i=this->r; i++){
+            for(int i = r+1; i=this->r; i++){ //On vérifie qu'il y a bien des insectes entre la case voulu et la case d'origine
                 if(!estOcupe(q,i,s+compteur,plateau)){
                     return;
                 }
@@ -143,7 +143,7 @@ void Sauterelle::deplacerSauterelle(int q, int r, int q, const vector<Case>& pla
             }
             this->deplacerPiece(q,r,s);
         }
-    }else if(r==this->r){
+    }else if(r==this->r){ //idem pour une autre direction
         if(q<this->q){
             int compteur(-1);
             for(int i = q+1; i=this->q; i++){
@@ -154,7 +154,7 @@ void Sauterelle::deplacerSauterelle(int q, int r, int q, const vector<Case>& pla
             }
             this->deplacerPiece(q,r,s);
         }
-        else{
+        else{ //idem pour une autre direction
             int compteur(1);
             for(int i = q-1; i=this->q; i--){
                 if(!estOcupe(i,r,s+compteur,plateau)){
